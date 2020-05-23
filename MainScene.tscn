@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Map.gdns" type="Script" id=1]
+[ext_resource path="res://Camera.gdns" type="Script" id=2]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+scale = Vector2( 0.5, 0.5 )
+anchor_mode = 0
+current = true
+zoom = Vector2( 0.5, 1 )
+script = ExtResource( 2 )
+
+[node name="Node2D" type="Node2D" parent="Camera2D"]
+script = ExtResource( 1 )

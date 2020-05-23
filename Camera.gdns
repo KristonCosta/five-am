@@ -3,6 +3,6 @@
 [ext_resource path="res://libgod_four_am.gdnlib" type="GDNativeLibrary" id=1]
 
 [resource]
-resource_name = "HelloWorld"
-class_name = "HelloWorld"
+resource_name = "Camera"
+class_name = "Camera"
 library = ExtResource( 1 )
