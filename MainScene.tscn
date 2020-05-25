@@ -34,4 +34,17 @@ margin_bottom = 36.2166
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="ItemList" type="ItemList" parent="UIController/Panel"]
+anchor_left = 0.00225369
+anchor_right = 0.00225369
+margin_left = -1.35834
+margin_top = 70.0
+margin_right = 73.6417
+margin_bottom = 150.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LogicController" type="Node2D" parent="."]
 [connection signal="clicked_on_entity" from="PlayerCamera/ClientController" to="UIController" method="_on_ClientController_clicked_on_entity" flags=3]

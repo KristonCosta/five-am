@@ -19,7 +19,12 @@ func _process(delta):
 	pass
 
 
-
-func _on_ClientController_clicked_on_entity(data):
-	var node = get_node("../PlayerCamera/ClientController")
-	print(node.get_name(data))
+func _on_ClientController_clicked_on_entity(entity):
+	var controller = get_node("../PlayerCamera/ClientController")
+	var label = get_node("Panel/Label")
+	var itemlist = get_node("Panel/ItemList")
+	label.text = controller.get_name(entity)
+	itemlist.clear()
+	for item in controller.get_inventory(entity):
+		itemlist.add_item(item["name"])
+	

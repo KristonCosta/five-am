@@ -13,19 +13,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5775344c-3b4c-42ac-8432-83647dd77adc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/color.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/component.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/glyph.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/message.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/gamestate.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/serializers.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/server.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainScene.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/MainScene.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UIController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/UIController.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/map_builders/factories.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/map_builders/factories.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/mod.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +113,7 @@
       <workItem from="1590199695282" duration="165000" />
       <workItem from="1590199868849" duration="14585000" />
       <workItem from="1590253983829" duration="27238000" />
-      <workItem from="1590335599406" duration="13330000" />
+      <workItem from="1590335599406" duration="16680000" />
     </task>
     <servers />
   </component>
@@ -154,22 +145,22 @@
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
     <state x="1052" y="412" key="ExperimentsDialog/0.23.1920.1106@0.23.1920.1106" timestamp="1590199849178" />
-    <state width="1119" height="306" key="GridCell.Tab.0.bottom" timestamp="1590364385637">
+    <state width="1434" height="306" key="GridCell.Tab.0.bottom" timestamp="1590367948827">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1119" height="306" key="GridCell.Tab.0.bottom/0.23.1920.1106@0.23.1920.1106" timestamp="1590364385637" />
-    <state width="1119" height="306" key="GridCell.Tab.0.center" timestamp="1590364385637">
+    <state width="1434" height="306" key="GridCell.Tab.0.bottom/0.23.1920.1106@0.23.1920.1106" timestamp="1590367948827" />
+    <state width="1434" height="306" key="GridCell.Tab.0.center" timestamp="1590367948826">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1119" height="306" key="GridCell.Tab.0.center/0.23.1920.1106@0.23.1920.1106" timestamp="1590364385637" />
-    <state width="1119" height="306" key="GridCell.Tab.0.left" timestamp="1590364385636">
+    <state width="1434" height="306" key="GridCell.Tab.0.center/0.23.1920.1106@0.23.1920.1106" timestamp="1590367948826" />
+    <state width="1434" height="306" key="GridCell.Tab.0.left" timestamp="1590367948826">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1119" height="306" key="GridCell.Tab.0.left/0.23.1920.1106@0.23.1920.1106" timestamp="1590364385636" />
-    <state width="1119" height="306" key="GridCell.Tab.0.right" timestamp="1590364385637">
+    <state width="1434" height="306" key="GridCell.Tab.0.left/0.23.1920.1106@0.23.1920.1106" timestamp="1590367948826" />
+    <state width="1434" height="306" key="GridCell.Tab.0.right" timestamp="1590367948827">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1119" height="306" key="GridCell.Tab.0.right/0.23.1920.1106@0.23.1920.1106" timestamp="1590364385637" />
+    <state width="1434" height="306" key="GridCell.Tab.0.right/0.23.1920.1106@0.23.1920.1106" timestamp="1590367948827" />
     <state x="859" y="215" key="SettingsEditor" timestamp="1590199774998">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
@@ -190,6 +181,11 @@
           <url>file://$USER_HOME$/.cargo/git/checkouts/legion-6fbc02e8da0bdce7/55ba3ae/legion_core/src/entity.rs</url>
           <line>26</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/lib.rs</url>
+          <line>401</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

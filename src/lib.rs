@@ -12,7 +12,7 @@ use std::collections::HashMap;
 use std::cell::RefCell;
 use crate::Event::ClickedOn;
 use std::rc::Rc;
-use crate::component::Name;
+use crate::component::{Name, Inventory};
 use crate::client::Serdent;
 
 pub mod color;
@@ -288,7 +288,10 @@ impl EntityManager {
     }
 }
 
-struct NodeInternal {
+#[derive(NativeClass)]
+#[inherit(Node)]
+#[register_with(Self::register_signals)]
+pub struct MapNode {
     tile_map: TileMap,
     atlas: Atlas,
     manager: EntityManager,
@@ -297,13 +300,6 @@ struct NodeInternal {
     turns: u32,
     lag: f32,
     loaded_map: bool,
-}
-
-#[derive(NativeClass)]
-#[inherit(Node)]
-#[register_with(Self::register_signals)]
-pub struct MapNode {
-    internal: RefCell<NodeInternal>
 }
 
 const AUTO_TILE: i64 = 0;
@@ -342,8 +338,6 @@ impl MapNode {
 
         let mut server = Server::new();
         MapNode {
-            internal: RefCell::new(
-                NodeInternal {
                     tile_map,
                     atlas,
                     server,
@@ -352,8 +346,7 @@ impl MapNode {
                     turns: 0,
                     lag: 0.0,
                     loaded_map: false,
-                }
-            )
+
         }
     }
 
@@ -370,30 +363,51 @@ impl MapNode {
         });
     }
 
+    fn get_entity(variant: Variant) -> Option<Entity> {
+        match variant.get_type() {
+            VariantType::I64 => {
+                let entity: Entity = Serdent(variant.to_u64()).into();
+                Some(entity)
+            },
+            _ => None,
+        }
+    }
+
     #[export]
     unsafe fn get_name(&self, _owner:Node, entity: Variant) -> GodotString {
-        godot_print!("Trying to get name");
-        let internal = match self.internal.try_borrow() {
-            Ok(internal) => internal,
-            Err(err) => {
-                godot_print!("Failed to borrow! {:?}", err);
-                panic!("GAK");
-            }
-        };
-        let world = &internal.server.world;
-        match entity.get_type() {
-            VariantType::I64 =>
-                {
-                    godot_print!("Matched type");
-                    let entity: Entity = Serdent(entity.to_u64()).into();
-                    godot_print!("Serialized {:?}", entity);
-                    world.get_component::<Name>(entity).map_or(GodotString::from_str(""),|name| {
-                        GodotString::from_str(&name.name)
-                    })
-                },
-            _ => GodotString::from_str("")
-        }
 
+        let world = &self.server.world;
+        match Self::get_entity(entity) {
+            Some(entity) => world.get_component::<Name>(entity).map_or(GodotString::from_str(""),|name| {
+                GodotString::from_str(&name.name)
+            }),
+            None => GodotString::from_str("")
+        }
+    }
+
+    #[export]
+    unsafe fn get_inventory(&self, _owner: Node, variant: Variant) -> VariantArray {
+        let mut res: VariantArray = VariantArray::new();
+        let world = &self.server.world;
+        match Self::get_entity(variant) {
+            Some(entity) => {
+                world.get_component::<Inventory>(entity).map(|inventory| {
+                    inventory.contents.iter().for_each(|item| {
+                        let name = world.get_component::<Name>(*item);
+                        match name {
+                            Some(name) => {
+                                let mut dictionary: Dictionary = Dictionary::new();
+                                dictionary.set(&Variant::from_str("name"), &Variant::from_str(&name.name));
+                                res.push(&dictionary.to_variant());
+                            },
+                            None => ()
+                        };
+                    });
+                });
+            },
+            None => ()
+        }
+        res
     }
 
     #[export]
@@ -403,32 +417,28 @@ impl MapNode {
     }
 
     #[export]
-    unsafe fn _physics_process(&self, _owner: Node, delta: f64) {
-        self.internal.borrow_mut().server.tick();
+    unsafe fn _physics_process(&mut self, _owner: Node, delta: f64) {
+        self.server.tick();
     }
 
     #[export]
-    unsafe fn _process(&self, mut _owner: Node, delta: f64) {
-        let mut internal = &mut *self.internal.borrow_mut();
-        internal.timestep.delta();
-        if let Some(fps) = internal.timestep.frame_rate() {
+    unsafe fn _process(&mut self, mut _owner: Node, delta: f64) {
+        self.timestep.delta();
+        if let Some(fps) = self.timestep.frame_rate() {
             godot_print!("FPS {}", fps);
         }
-        self.process_queue(_owner, &mut internal);
-        let server = &mut internal.server;
-        let tile_map = &mut internal.tile_map;
-        let resources = & server.resources;
-        let map = resources.get::<crate::map::Map>().unwrap();
-
-
+        self.process_queue(_owner);
+        let map = self.server.resources.get::<crate::map::Map>().unwrap();
+        if !self.loaded_map {
+            self.loaded_map = true;
             for x in 0..map.size.x {
                 for y in 0..map.size.y {
                     let texture_region = match map.tiles[map.coord_to_index(x, y)] {
-                        TileType::Wall => internal.atlas.get('#'),
-                        TileType::Floor => internal.atlas.get('.'),
-                        TileType::Digging => internal.atlas.get('>'),
+                        TileType::Wall => self.atlas.get('#'),
+                        TileType::Floor => self.atlas.get('.'),
+                        TileType::Digging => self.atlas.get('>'),
                     };
-                    internal.tile_map.set_cell(
+                    self.tile_map.set_cell(
                         x as i64,
                         y as i64,
                         AUTO_TILE,
@@ -438,24 +448,24 @@ impl MapNode {
                         texture_region,
                     );
                 }
-
+            }
         }
-        let world = &mut server.world;
 
+        let world = &mut self.server.world;
         let query = <(Read<component::Position>, Read<component::Renderable>)>::query();
         for (entity, (position, renderable)) in query.iter_entities(world) {
-            if  internal.manager.entity_exists(entity) {
+            if  self.manager.entity_exists(entity) {
                 continue;
             }
             let glyph: Glyph = renderable.glyph;
-            internal.manager.new_sprite(entity, glyph.ch);
+            self.manager.new_sprite(entity, glyph.ch);
         }
 
-        internal.manager.sync(world);
+        self.manager.sync(world);
     }
 
-    fn process_queue(&self, mut _owner: Node, internal:  &mut NodeInternal) {
-        for event in  internal.manager.event_queue.borrow_mut().drain(..) {
+    fn process_queue(&self, mut _owner: Node) {
+        for event in  self.manager.event_queue.borrow_mut().drain(..) {
             match event {
                 ClickedOn(entity) => {
                     let serialized: Serdent = entity.into();
@@ -471,8 +481,7 @@ impl MapNode {
     }
 
     #[export]
-    unsafe fn _input(&self, _owner: Node, event: Option<InputEvent>) {
-        let internal = &mut *self.internal.borrow_mut();
+    unsafe fn _input(&mut self, _owner: Node, event: Option<InputEvent>) {
         if let Some(event) = event {
             let key: Option<InputEventKey> = event.cast();
             if let Some(key) = key {
@@ -480,10 +489,10 @@ impl MapNode {
                     return
                 }
                 match key.get_scancode() {
-                    GlobalConstants::KEY_W =>  internal.server.try_move_player(0, -1),
-                    GlobalConstants::KEY_S =>  internal.server.try_move_player(0, 1),
-                    GlobalConstants::KEY_A =>  internal.server.try_move_player(-1, 0),
-                    GlobalConstants::KEY_D =>  internal.server.try_move_player(1, 0),
+                    GlobalConstants::KEY_W =>  self.server.try_move_player(0, -1),
+                    GlobalConstants::KEY_S =>  self.server.try_move_player(0, 1),
+                    GlobalConstants::KEY_A =>  self.server.try_move_player(-1, 0),
+                    GlobalConstants::KEY_D =>  self.server.try_move_player(1, 0),
                     _ => false,
                 };
             }
