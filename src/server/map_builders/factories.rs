@@ -1,9 +1,9 @@
+use super::shop_builder::ShopBuilder;
 use crate::geom::Vector;
 use crate::server::map_builders::basic_builders::SimpleMapBuilder;
 use crate::server::map_builders::drunkard::DrunkardsWalkBuilder;
 use crate::server::map_builders::{BuiltMap, MapBuilder};
 use rand::prelude::ThreadRng;
-use super::shop_builder::ShopBuilder;
 
 pub fn random_builder(size: Vector, depth: i32, rng: &mut ThreadRng) -> BuiltMap {
     MapBuilder::new(size, depth, SimpleMapBuilder)

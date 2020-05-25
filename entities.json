@@ -1,0 +1,78 @@
+{
+  "builder": [
+    {
+      "id": "player",
+      "name": "Player",
+      "renderable": {
+        "glyph": {
+          "ch": "@",
+          "foreground": "#ffff00",
+          "render_order": 3
+        }
+      },
+      "priority": {
+        "value": 1
+      },
+      "inventory": {
+        "contents": ["love", "star", "diamond", "club"],
+        "capacity": 3
+      }
+    },
+    {
+      "id": "love",
+      "name": "Heart",
+      "renderable": {
+        "glyph": {
+          "ch": "♥",
+          "foreground": "#00dccb",
+          "render_order": 3
+        }
+      }
+    },
+    {
+      "id": "club",
+      "name": "Club",
+      "renderable": {
+        "glyph": {
+          "ch": "♣",
+          "foreground": "#9757ff",
+          "render_order": 3
+        }
+      }
+    },
+    {
+      "id": "star",
+      "name": "Star",
+      "renderable": {
+        "glyph": {
+          "ch": "*",
+          "foreground": "#0053ff",
+          "render_order": 3
+        }
+      }
+    },
+    {
+      "id": "diamond",
+      "name": "Diamond",
+      "renderable": {
+        "glyph": {
+          "ch": "♦",
+          "foreground": "#6fa501",
+          "render_order": 3
+        }
+      }
+    },
+    {
+      "id": "display",
+      "name": "Display Case",
+      "renderable": {
+        "glyph": {
+          "ch": "◙",
+          "foreground": "#ff7c7c",
+          "render_order": 3
+        }
+      },
+      "display_cabinet": true
+    }
+  ]
+}
