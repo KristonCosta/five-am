@@ -3,19 +3,23 @@
 [ext_resource path="res://test.png" type="Texture" id=1]
 [ext_resource path="res://entity.gd" type="Script" id=2]
 
-[sub_resource type="RectangleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 10, 20 )
 
 [node name="Entity" type="Node2D"]
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( -1, 0 )
+position = Vector2( 0, 0.0367203 )
 texture = ExtResource( 1 )
 region_enabled = true
+region_rect = Rect2( 0, 0, 20, 40 )
 
 [node name="Area2D" type="Area2D" parent="Sprite"]
-visible = false
+position = Vector2( 0, -0.0367203 )
+z_index = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite/Area2D"]
-shape = SubResource( 2 )
+position = Vector2( 0, 0.0367203 )
+shape = SubResource( 1 )
+[connection signal="input_event" from="Sprite/Area2D" to="." method="_on_Area2D_input_event"]

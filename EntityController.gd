@@ -1,5 +1,6 @@
 extends Node2D
 
+signal on_entity_click(entity)
 
 # Declare member variables here. Examples:
 # var a = 2
@@ -32,12 +33,19 @@ func _ready():
 #func _process(delta):
 #	pass
 
+func entity_clicked(entity):
+	emit_signal("on_entity_click", entity)
+
 func _on_LogicController_created_entities(entities):
 	var db = get_node("../../../../LogicController")
 	for entity in entities: 
 		var scene = entity_scene.instance()
 		scene.setup(db, ATLAS, entity)
 		add_child(scene)
+		scene.connect("on_entity_click", self, "entity_clicked", [entity])
 
 func _on_LogicController_deleted_entities(entities):
 	print(entities)
+
+func _on_Entity_on_entity_click(entity):
+	print("Click")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://ascii_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://MapController.gd" type="Script" id=2]
@@ -6,6 +6,9 @@
 [ext_resource path="res://LogicController.gdns" type="Script" id=4]
 [ext_resource path="res://Camera2D.gd" type="Script" id=5]
 [ext_resource path="res://EntityController.gd" type="Script" id=6]
+[ext_resource path="res://CharacterController.gd" type="Script" id=7]
+[ext_resource path="res://entity.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Viewport.gd" type="Script" id=9]
 
 [node name="Node2D" type="Node2D"]
 
@@ -13,10 +16,10 @@
 script = ExtResource( 3 )
 
 [node name="ViewportContainer" type="ViewportContainer" parent="UIController"]
-margin_left = 0.769073
-margin_top = 1.14924
-margin_right = 1024.77
-margin_bottom = 601.149
+margin_left = 0.0973053
+margin_top = 0.0973053
+margin_right = 1024.1
+margin_bottom = 600.097
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -24,15 +27,9 @@ __meta__ = {
 [node name="Viewport" type="Viewport" parent="UIController/ViewportContainer"]
 size = Vector2( 1024, 600 )
 handle_input_locally = false
+hdr = false
 render_target_update_mode = 3
-
-[node name="MapController" type="Node2D" parent="UIController/ViewportContainer/Viewport"]
-script = ExtResource( 2 )
-
-[node name="TileMap" type="TileMap" parent="UIController/ViewportContainer/Viewport/MapController"]
-tile_set = ExtResource( 1 )
-cell_size = Vector2( 20, 40 )
-format = 1
+script = ExtResource( 9 )
 
 [node name="Camera2D" type="Camera2D" parent="UIController/ViewportContainer/Viewport"]
 anchor_mode = 0
@@ -43,7 +40,18 @@ script = ExtResource( 5 )
 [node name="EntityController" type="Node2D" parent="UIController/ViewportContainer/Viewport"]
 script = ExtResource( 6 )
 
+[node name="Entity" parent="UIController/ViewportContainer/Viewport/EntityController" instance=ExtResource( 8 )]
+
+[node name="MapController" type="Node2D" parent="UIController/ViewportContainer/Viewport"]
+script = ExtResource( 2 )
+
+[node name="TileMap" type="TileMap" parent="UIController/ViewportContainer/Viewport/MapController"]
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 20, 40 )
+format = 1
+
 [node name="Panel" type="Panel" parent="UIController"]
+visible = false
 margin_left = 1.10907
 margin_top = 4.57387
 margin_right = 160.109
@@ -74,6 +82,11 @@ __meta__ = {
 
 [node name="LogicController" type="Node2D" parent="."]
 script = ExtResource( 4 )
+
+[node name="CharacterController" type="Node2D" parent="."]
+script = ExtResource( 7 )
+[connection signal="on_entity_click" from="UIController/ViewportContainer/Viewport/EntityController" to="UIController" method="_on_EntityController_on_entity_click" flags=3]
+[connection signal="on_entity_click" from="UIController/ViewportContainer/Viewport/EntityController/Entity" to="UIController/ViewportContainer/Viewport/EntityController" method="_on_Entity_on_entity_click" flags=3]
 [connection signal="created_entities" from="LogicController" to="UIController/ViewportContainer/Viewport/EntityController" method="_on_LogicController_created_entities" flags=3]
 [connection signal="deleted_entities" from="LogicController" to="UIController/ViewportContainer/Viewport/EntityController" method="_on_LogicController_deleted_entities" flags=3]
 [connection signal="map_loaded" from="LogicController" to="UIController" method="_on_LogicController_map_loaded" flags=3]

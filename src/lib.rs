@@ -11,7 +11,6 @@ use legion::prelude::*;
 use legion::query::DefaultFilter;
 use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
-use crate::Event::ClickedOn;
 use std::rc::Rc;
 use crate::component::{Name, Inventory, Position, Renderable};
 use crate::client::Serdent;
@@ -47,116 +46,6 @@ pub mod client {
         }
     }
 }
-
-
-type FP = f32;
-const MS_PER_UPDATE: FP = 0.5;
-
-#[derive(Debug)]
-pub enum Event {
-    ClickedOn(Entity)
-}
-
-#[derive(Debug)]
-pub struct TimeStep {
-    last_time: Instant,
-    delta_time: FP,
-    frame_count: u32,
-    frame_time: FP,
-}
-
-impl TimeStep {
-    // https://gitlab.com/flukejones/diir-doom/blob/master/game/src/main.rs
-    // Grabbed this from here
-    pub fn new() -> TimeStep {
-        TimeStep {
-            last_time: Instant::now(),
-            delta_time: 0.0,
-            frame_count: 0,
-            frame_time: 0.0,
-        }
-    }
-
-    pub fn delta(&mut self) -> FP {
-        let current_time = Instant::now();
-        let delta = current_time.duration_since(self.last_time).as_micros() as FP * 0.001;
-        self.last_time = current_time;
-        self.delta_time = delta;
-        delta
-    }
-
-    // provides the framerate in FPS
-    pub fn frame_rate(&mut self) -> Option<u32> {
-        self.frame_count += 1;
-        self.frame_time += self.delta_time;
-        let tmp;
-        // per second
-        if self.frame_time >= 1000.0 {
-            tmp = self.frame_count;
-            self.frame_count = 0;
-            self.frame_time = 0.0;
-            return Some(tmp);
-        }
-        None
-    }
-}
-/*
-pub struct EntityManager {
-    atlas_texture: Texture,
-    atlas: Atlas,
-    entity_to_node: HashMap<Entity, Sprite>,
-    owner: Node,
-    event_queue: Rc<RefCell<Vec<Event>>>
-}
-
-impl EntityManager {
-    pub fn new_sprite(&mut self, entity: Entity, c: char) -> Sprite {
-        let mut sprite = Sprite::new();
-
-        let region = self.atlas.get(c);
-        let position = (region.x * 20.0 , region.y * 40.0).into();
-        unsafe {
-            sprite.set_texture(self.atlas_texture.cast());
-            sprite.set_region(true);
-
-            sprite.set_region_rect(Rect2::new(position, (20.0, 40.0).into()));
-            let mut shape: RectangleShape2D = RectangleShape2D::new();
-            shape.set_extents((10.0, 20.0).into());
-
-            let mut clickable: Instance<ClickableEntity> = Instance::<ClickableEntity>::new();
-            clickable.map_mut(|c, owner| {
-                c.set_entity(entity);
-                c.set_event_queue(self.event_queue.clone())
-            });
-
-            let mut clickable = clickable.into_base();
-            clickable.set_pickable(true);
-            let owner_clone = clickable.clone();
-            let id = clickable.create_shape_owner(owner_clone.cast());
-            clickable.shape_owner_add_shape(id, shape.cast());
-            sprite.add_child(clickable.cast(), true);
-            self.owner.add_child(sprite.cast(), true);
-            self.entity_to_node.insert(entity, sprite);
-        }
-        sprite
-    }
-
-    pub fn entity_exists(&self, entity: Entity) -> bool {
-        self.entity_to_node.contains_key(&entity)
-    }
-
-    pub fn sync(&mut self, world: &mut legion::prelude::World) {
-        let query = <(Read<component::Position>, Read<component::Renderable>)>::query();
-        for (entity, (position, _)) in query.iter_entities(world) {
-            if let Some(sprite ) = self.entity_to_node.get_mut(&entity) {
-                unsafe {
-                    sprite.set_position((position.x as f32 * 20.0 + 10.0, position.y as f32 * 40.0 + 20.0).into());
-                }
-            }
-        }
-    }
-}
-*/
 
 struct TrackerResult {
     created: Vec<u64>,
@@ -381,105 +270,19 @@ impl LogicController {
         GodotString::from_str(res)
     }
 
-}
-
-
-
-#[derive(NativeClass)]
-#[inherit(Node)]
-pub struct MapNode {
-    server: Server,
-}
-
-const AUTO_TILE: i64 = 0;
-
-#[methods]
-impl MapNode {
-    fn _init(mut _owner: Node) -> Self {
-        let mut server = Server::new();
-        MapNode {
-                    server,
-
-        }
-    }
-
     #[export]
-    unsafe fn ping(&self, _owner:Node) -> GodotString {
-        godot_print!("Pong.");
-        GodotString::from_str("Test")
-    }
-
-    #[export]
-    unsafe fn _physics_process(&mut self, _owner: Node, delta: f64) {
-        self.server.tick();
-    }
-/*
-    #[export]
-    unsafe fn _process(&mut self, mut _owner: Node, delta: f64) {
-        self.timestep.delta()
-        if let Some(fps) = self.timestep.frame_rate() {
-            godot_print!("FPS {}", fps);
-        }
-        self.process_queue(_owner);
-        let map = self.server.resources.get::<crate::map::Map>().unwrap();
-        if !self.loaded_map {
-            self.loaded_map = true;
-            for x in 0..map.size.x {
-                for y in 0..map.size.y {
-                    let texture_region = match map.tiles[map.coord_to_index(x, y)] {
-                        TileType::Wall => self.atlas.get('#'),
-                        TileType::Floor => self.atlas.get('.'),
-                        TileType::Digging => self.atlas.get('>'),
-                    };
-                    self.tile_map.set_cell(
-                        x as i64,
-                        y as i64,
-                        AUTO_TILE,
-                        false,
-                        false,
-                        false,
-                        texture_region,
-                    );
-                }
+    unsafe fn try_move(&mut self, _owner: Node, variant: Variant) {
+        match variant.get_type() {
+            VariantType::Vector2 => {
+                let delta = variant.to_vector2();
+                self.server.try_move_player(delta.x as i32, delta.y as i32);
             }
-        }
-
-        let world = &mut self.server.world;
-        let query = <(Read<component::Position>, Read<component::Renderable>)>::query();
-        for (entity, (position, renderable)) in query.iter_entities(world) {
-            if  self.manager.entity_exists(entity) {
-                continue;
-            }
-            let glyph: Glyph = renderable.glyph;
-            self.manager.new_sprite(entity, glyph.ch);
-        }
-
-        self.manager.sync(world);
-    }
-
-    fn process_queue(&self, mut _owner: Node) {
-        for event in  self.manager.event_queue.borrow_mut().drain(..) {
-            match event {
-                ClickedOn(entity) => {
-                    let serialized: Serdent = entity.into();
-                    unsafe {
-                        _owner.emit_signal(
-                            GodotString::from_str("clicked_on_entity"),
-                            &[Variant::from_u64(serialized.0)]
-                        );
-                    }
-                }
-            }
+            _ => ()
         }
     }
-    */
-
 }
 
 fn init(handle: gdnative::init::InitHandle) {
-    handle.add_class::<MapNode>();
-
-
     handle.add_class::<LogicController>();
 }
 

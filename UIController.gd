@@ -5,12 +5,11 @@ extends Node2D
 # var a = 2
 # var b = "text"
 
-var pending_event = null
+var _db = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-
-	pass # Replace with function body.
+	_db = get_node("../LogicController")
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -25,3 +24,8 @@ func _on_LogicController_map_loaded(tiles, width):
 
 func _on_LogicController_sync_entities(entities):
 	pass # Replace with function body.
+
+
+func _on_EntityController_on_entity_click(entity):
+	var label = get_node("Panel/Label")
+	label.text = _db.get_name(entity)
