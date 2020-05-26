@@ -57,7 +57,7 @@ impl Server {
     pub fn new() -> Self {
         let (universe, world, mut resources) = Self::setup_ecs();
         let mut rng = rand::thread_rng();
-        let built_map = shop_builder((20, 20).into(), &mut rng);
+        let built_map = drunk_builder((40, 40).into(), 0,&mut rng);
         let BuiltMap {
             spawn_list: _,
             map,

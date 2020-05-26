@@ -1,5 +1,5 @@
 #![feature(vec_remove_item)]
-use crate::frontend::Atlas;
+
 use crate::glyph::Glyph;
 use crate::map::TileType;
 use crate::server::map_builders::factories::{drunk_builder, random_builder, shop_builder};
@@ -8,11 +8,12 @@ use crate::server::server::Server;
 use gdnative::*;
 use instant::Instant;
 use legion::prelude::*;
-use std::collections::HashMap;
+use legion::query::DefaultFilter;
+use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
 use crate::Event::ClickedOn;
 use std::rc::Rc;
-use crate::component::{Name, Inventory};
+use crate::component::{Name, Inventory, Position, Renderable};
 use crate::client::Serdent;
 
 pub mod color;
@@ -47,107 +48,14 @@ pub mod client {
     }
 }
 
+
+type FP = f32;
+const MS_PER_UPDATE: FP = 0.5;
+
 #[derive(Debug)]
 pub enum Event {
     ClickedOn(Entity)
 }
-
-#[derive(NativeClass)]
-#[inherit(Area2D)]
-pub struct ClickableEntity {
-    entity: Option<Entity>,
-    event_queue: Option<Rc<RefCell<Vec<Event>>>>
-}
-
-#[methods]
-impl ClickableEntity {
-
-    fn _init(mut _owner: Area2D) -> Self {
-        ClickableEntity {
-            entity: None,
-            event_queue: None,
-        }
-    }
-
-    pub fn set_entity(&mut self, entity: Entity) {
-        self.entity = Some(entity);
-    }
-
-    pub fn set_event_queue(&mut self, queue: Rc<RefCell<Vec<Event>>>) {
-        self.event_queue = Some(queue);
-    }
-
-
-    #[export]
-    pub fn _input_event(
-        &mut self,
-        _owner: Area2D,
-        viewport: Option<Object>,
-        event: Option<InputEvent>,
-        shape_idx: i64
-    ) {
-        if let Some(event) = event {
-            let button: Option<InputEventMouseButton> = event.cast();
-            if let Some(button) = button {
-                if button.is_pressed() {
-
-                    if let Some(queue) = &self.event_queue {
-                        (*queue.borrow_mut()).push(ClickedOn(self.entity.unwrap()));
-                    }
-                }
-            }
-        }
-    }
-
-    #[export]
-    unsafe fn notify(&mut self, mut _owner: Area2D) {
-        godot_print!("Clicked on area");
-    }
-}
-
-
-pub mod frontend {
-    use std::collections::HashMap;
-    use gdnative::*;
-
-    #[derive(Clone)]
-    pub struct Atlas {
-        map: HashMap<char, Vector2>,
-    }
-
-    static SUPPORTED_CHARS: &str = r#"╦╩═╬╧╨╤╥╙╘╒╓╫╪┘╠┌█▄▌▐▀αßΓπΣσµτΦδ∞φ╟╚╔║╗╝╣╢╖
-*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQ⌠⌡≥
-RSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxy÷≈
-z{|}~⌂ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáí°∙
-óúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╕╜╛┐└┴┬├─┼╞·√±≤ⁿε∩≡ΘΩ
-"☺☻♥♦♣♠•◘○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼!#$%&'()²■"#;
-
-    impl Atlas {
-        pub fn new() -> Self {
-            let mut map = HashMap::new();
-            let (mut x, mut y) = (0.0, 0.0);
-            for c in SUPPORTED_CHARS.chars() {
-                if c == '\n' {
-                    y += 1.0;
-                    x = 0.0;
-                } else {
-                    map.insert(c, (x, y).into());
-                    x += 1.0;
-                }
-            }
-            Atlas {
-                map,
-            }
-        }
-
-        pub fn get(&self, c: char) -> Vector2 {
-            self.map.get(&c).unwrap().clone()
-        }
-    }
-}
-
-type FP = f32;
-const MS_PER_UPDATE: FP = 0.5;
 
 #[derive(Debug)]
 pub struct TimeStep {
@@ -192,46 +100,7 @@ impl TimeStep {
         None
     }
 }
-
-#[derive(NativeClass)]
-#[inherit(Node)]
-pub struct Camera;
-
-#[methods]
-impl Camera {
-    fn _init(mut _owner: Node) -> Self {
-        Camera
-    }
-    #[export]
-    unsafe fn _input(&mut self, mut _owner: Node, event: Option<InputEvent>) {
-        let mut _owner: Camera2D = _owner.cast().unwrap();
-        if let Some(event) = event {
-            let key: Option<InputEventKey> = event.cast();
-            if let Some(key) = key {
-                if !key.is_pressed() {
-                    return
-                }
-                let current_offset = _owner.get_offset();
-                let delta_offset: Vector2 = match key.get_scancode() {
-                    GlobalConstants::KEY_W => (0.0, -20.0),
-                    GlobalConstants::KEY_S => (0.0, 20.0),
-                    GlobalConstants::KEY_A => (-10.0, 0.0),
-                    GlobalConstants::KEY_D => (10.0, 0.0),
-                    _ => (0.0, 0.0),
-                }
-                .into();
-                if delta_offset.length() != 0.0 {
-                    _owner.set_offset(current_offset + delta_offset);
-                }
-            }
-        }
-    }
-    #[export]
-    fn _ready(&self, _owner: Node) {
-        godot_print!("Loaded Camera Controller");
-    }
-}
-
+/*
 pub struct EntityManager {
     atlas_texture: Texture,
     atlas: Atlas,
@@ -287,80 +156,149 @@ impl EntityManager {
         }
     }
 }
+*/
+
+struct TrackerResult {
+    created: Vec<u64>,
+    deleted: Vec<u64>,
+}
+
+struct EntityTracker {
+    prev_entities: HashSet<u64>
+}
+
+impl EntityTracker {
+    pub fn track(&mut self, world: &legion::prelude::World) -> TrackerResult {
+        let query = <(Read<component::Position>)>::query();
+        let current: HashSet<u64> = query.iter_entities(world).map(
+            |(entity, (_))| {
+                let ser: Serdent = entity.into();
+                ser.0
+            }
+        ).collect();
+        let deleted: Vec<u64> = self.prev_entities.difference(&current).cloned().collect();
+        let created: Vec<u64> = current.difference(&self.prev_entities).cloned().collect();
+        self.prev_entities = current;
+        TrackerResult {
+            created,
+            deleted
+        }
+    }
+}
+
 
 #[derive(NativeClass)]
 #[inherit(Node)]
 #[register_with(Self::register_signals)]
-pub struct MapNode {
-    tile_map: TileMap,
-    atlas: Atlas,
-    manager: EntityManager,
+pub struct LogicController {
     server: Server,
-    timestep: TimeStep,
-    turns: u32,
-    lag: f32,
-    loaded_map: bool,
+    tracker: EntityTracker
 }
 
-const AUTO_TILE: i64 = 0;
-
 #[methods]
-impl MapNode {
+impl LogicController {
     fn _init(mut _owner: Node) -> Self {
-        let str = GodotString::from_str("test.png");
-        let mut texture = ImageTexture::new();
-        texture.load(str);
-        let mut tile_set = TileSet::new();
-        tile_set.create_tile(AUTO_TILE);
-        tile_set.tile_set_texture(AUTO_TILE, texture.cast());
-        let region = Rect2::new((0.0, 0.0).into(), (860.0, 240.0).into());
-        tile_set.tile_set_region(AUTO_TILE, region);
-        tile_set.tile_set_tile_mode(AUTO_TILE, 2);
-        tile_set.autotile_set_size(AUTO_TILE, (20.0, 40.0).into());
-
-        let atlas = Atlas::new();
-        let mut tile_map = TileMap::new();
-        let mut timestep = TimeStep::new();
-        unsafe {
-            tile_map.set_cell_size((20.0, 40.0).into());
-            tile_map.set_tileset(Some(tile_set));
-            tile_map.set_quadrant_size(32);
-            _owner.add_child(tile_map.cast(), true);
-        }
-
-        let manager = EntityManager {
-            atlas_texture: texture.cast().unwrap(),
-            atlas: atlas.clone(),
-            entity_to_node: HashMap::new(),
-            owner: _owner.clone(),
-            event_queue: Rc::new(RefCell::new(Vec::new()))
-        };
-
-        let mut server = Server::new();
-        MapNode {
-                    tile_map,
-                    atlas,
-                    server,
-                    timestep,
-                    manager,
-                    turns: 0,
-                    lag: 0.0,
-                    loaded_map: false,
-
+        let server = Server::new();
+        let query = <(Read<component::Position>)>::query();
+        LogicController {
+            server,
+            tracker: EntityTracker {
+                prev_entities: HashSet::new()
+            }
         }
     }
 
     fn register_signals(builder: &init::ClassBuilder<Self>) {
         builder.add_signal(init::Signal {
-            name: "clicked_on_entity",
+            name: "map_loaded",
             // Argument list used by the editor for GUI and generation of GDScript handlers. It can be omitted if the signal is only used from code.
-            args: &[init::SignalArgument {
-                name: "entity",
-                default: Variant::from_i64(-1),
-                export_info: init::ExportInfo::new(VariantType::I64),
-                usage: init::PropertyUsage::DEFAULT,
-            }],
+            args: &[
+                init::SignalArgument {
+                    name: "tiles",
+                    default: Variant::default(),
+                    export_info: init::ExportInfo::new(VariantType::StringArray),
+                    usage: init::PropertyUsage::DEFAULT,
+                },
+                init::SignalArgument {
+                    name: "width",
+                    default: Variant::default(),
+                    export_info: init::ExportInfo::new(VariantType::I64),
+                    usage: init::PropertyUsage::DEFAULT,
+                },
+            ],
         });
+        builder.add_signal(init::Signal {
+            name: "created_entities",
+            // Argument list used by the editor for GUI and generation of GDScript handlers. It can be omitted if the signal is only used from code.
+            args: &[
+                init::SignalArgument {
+                    name: "entities",
+                    default: Variant::default(),
+                    export_info: init::ExportInfo::new(VariantType::VariantArray),
+                    usage: init::PropertyUsage::DEFAULT,
+                },
+            ],
+        });
+        builder.add_signal(init::Signal {
+            name: "deleted_entities",
+            // Argument list used by the editor for GUI and generation of GDScript handlers. It can be omitted if the signal is only used from code.
+            args: &[
+                init::SignalArgument {
+                    name: "entities",
+                    default: Variant::default(),
+                    export_info: init::ExportInfo::new(VariantType::VariantArray),
+                    usage: init::PropertyUsage::DEFAULT,
+                },
+            ],
+        });
+    }
+
+    unsafe fn emit_map(&self, mut _owner: Node) {
+        let map = self.server.resources.get::<crate::map::Map>().unwrap();
+        let variant: Vec<String> = map.tiles.iter().map(
+            |tile| match tile {
+                TileType::Wall => "#".to_string(),
+                TileType::Floor => ".".to_string(),
+                TileType::Digging => ">".to_string(),
+            }
+        ).collect();
+
+        _owner.emit_signal(
+            GodotString::from_str("map_loaded"),
+            &[variant.to_variant(), Variant::from_u64(map.size.x as u64)]
+        );
+    }
+
+    unsafe fn emit_entities(&self, mut _owner: Node, signal: &str, entities: Vec<u64>) {
+        _owner.emit_signal(
+            GodotString::from_str(signal),
+            &[entities.to_variant()]
+        );
+    }
+
+    #[export]
+    fn _ready(&self, mut _owner: Node) {
+        unsafe {
+            self.emit_map(_owner);
+        }
+    }
+
+    #[export]
+    unsafe fn _physics_process(&mut self, _owner: Node, delta: f64) {
+        self.server.tick();
+    }
+
+    #[export]
+    fn _process(&mut self, mut _owner: Node, delta: f64) {
+        unsafe {
+            let result = self.tracker.track(&self.server.world);
+            if !result.created.is_empty() {
+                self.emit_entities(_owner, "created_entities", result.created);
+            }
+            if !result.deleted.is_empty() {
+                self.emit_entities(_owner, "deleted_entities", result.deleted);
+            }
+        }
     }
 
     fn get_entity(variant: Variant) -> Option<Entity> {
@@ -375,7 +313,6 @@ impl MapNode {
 
     #[export]
     unsafe fn get_name(&self, _owner:Node, entity: Variant) -> GodotString {
-
         let world = &self.server.world;
         match Self::get_entity(entity) {
             Some(entity) => world.get_component::<Name>(entity).map_or(GodotString::from_str(""),|name| {
@@ -394,10 +331,12 @@ impl MapNode {
                 world.get_component::<Inventory>(entity).map(|inventory| {
                     inventory.contents.iter().for_each(|item| {
                         let name = world.get_component::<Name>(*item);
+                        let ser: Serdent = (*item).into();
                         match name {
                             Some(name) => {
                                 let mut dictionary: Dictionary = Dictionary::new();
                                 dictionary.set(&Variant::from_str("name"), &Variant::from_str(&name.name));
+                                dictionary.set(&Variant::from_str("entity"), &Variant::from_u64(ser.0));
                                 res.push(&dictionary.to_variant());
                             },
                             None => ()
@@ -411,6 +350,60 @@ impl MapNode {
     }
 
     #[export]
+    unsafe fn get_position(&self, _owner: Node, variant: Variant) -> Variant {
+        let world = &self.server.world;
+        let res: Vector2 = match Self::get_entity(variant) {
+            Some(entity) => {
+                world.get_component::<Position>(entity).map_or((-1.0 as f32, -1.0 as f32).into(),
+                  |position| {
+                        (position.x as f32, position.y as f32).into()
+                  }
+                )
+            },
+            None => (-1.0 as f32, -1.0 as f32).into()
+        };
+        res.to_variant()
+    }
+
+    #[export]
+    unsafe fn get_renderable(&self, _owner: Node, variant: Variant) -> GodotString {
+        let world = &self.server.world;
+        let res: String = match Self::get_entity(variant) {
+            Some(entity) => {
+                world.get_component::<Renderable>(entity).map_or("".to_string(),
+                                                               |renderable| {
+                                                                   renderable.glyph.ch.to_string()
+                                                               }
+                )
+            },
+            None => "".to_string()
+        };
+        GodotString::from_str(res)
+    }
+
+}
+
+
+
+#[derive(NativeClass)]
+#[inherit(Node)]
+pub struct MapNode {
+    server: Server,
+}
+
+const AUTO_TILE: i64 = 0;
+
+#[methods]
+impl MapNode {
+    fn _init(mut _owner: Node) -> Self {
+        let mut server = Server::new();
+        MapNode {
+                    server,
+
+        }
+    }
+
+    #[export]
     unsafe fn ping(&self, _owner:Node) -> GodotString {
         godot_print!("Pong.");
         GodotString::from_str("Test")
@@ -420,10 +413,10 @@ impl MapNode {
     unsafe fn _physics_process(&mut self, _owner: Node, delta: f64) {
         self.server.tick();
     }
-
+/*
     #[export]
     unsafe fn _process(&mut self, mut _owner: Node, delta: f64) {
-        self.timestep.delta();
+        self.timestep.delta()
         if let Some(fps) = self.timestep.frame_rate() {
             godot_print!("FPS {}", fps);
         }
@@ -479,35 +472,15 @@ impl MapNode {
             }
         }
     }
+    */
 
-    #[export]
-    unsafe fn _input(&mut self, _owner: Node, event: Option<InputEvent>) {
-        if let Some(event) = event {
-            let key: Option<InputEventKey> = event.cast();
-            if let Some(key) = key {
-                if !key.is_pressed() {
-                    return
-                }
-                match key.get_scancode() {
-                    GlobalConstants::KEY_W =>  self.server.try_move_player(0, -1),
-                    GlobalConstants::KEY_S =>  self.server.try_move_player(0, 1),
-                    GlobalConstants::KEY_A =>  self.server.try_move_player(-1, 0),
-                    GlobalConstants::KEY_D =>  self.server.try_move_player(1, 0),
-                    _ => false,
-                };
-            }
-        }
-    }
-    #[export]
-    fn _ready(&self, _owner: Node) {
-        godot_print!("Loaded Map");
-    }
 }
 
 fn init(handle: gdnative::init::InitHandle) {
     handle.add_class::<MapNode>();
-    handle.add_class::<Camera>();
-    handle.add_class::<ClickableEntity>();
+
+
+    handle.add_class::<LogicController>();
 }
 
 godot_gdnative_init!();
