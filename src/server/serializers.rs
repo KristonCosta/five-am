@@ -12,6 +12,7 @@ pub struct EntityBuilder {
     name: String,
     priority: Option<Priority>,
     display_cabinet: Option<bool>,
+    tradeable: Option<bool>,
     inventory: Option<Inventory>,
 }
 #[derive(Deserialize, Debug, Clone)]
@@ -141,6 +142,17 @@ pub mod entity_factory {
                         capacity: inventory.capacity,
                     },
                 )
+            }
+
+            if let Some(tradeable) = options.tradeable {
+                if tradeable {
+                    buffer.add_component(
+                        entity,
+                        component::Tradeable {
+                            request: None
+                        }
+                    )
+                }
             }
 
             if let Some(display) = options.display_cabinet {

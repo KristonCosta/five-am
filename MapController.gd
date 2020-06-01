@@ -29,7 +29,6 @@ func load_map(tiles, width):
 	var map = get_node("TileMap")
 	map.clear()
 	var tileset = map.tile_set
-	print(tileset.get_tiles_ids())
 	tileset.tile_set_region(0, Rect2(0.0, 0.0, 860.0, 240.0))
 	tileset.autotile_set_size(0, Vector2(20.0, 40.0))
 	var x = 0

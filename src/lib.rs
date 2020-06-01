@@ -12,8 +12,9 @@ use legion::query::DefaultFilter;
 use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
 use std::rc::Rc;
-use crate::component::{Name, Inventory, Position, Renderable};
-use crate::client::Serdent;
+use crate::component::{Name, Inventory, Position, Renderable, DisplayCabinet};
+use crate::client::{Serdent, entity_to_u64};
+use crate::message::Message;
 
 pub mod color;
 pub mod component;
@@ -44,6 +45,11 @@ pub mod client {
         fn into(self) -> Entity {
             unsafe { std::mem::transmute(self.0) }
         }
+    }
+
+    pub fn entity_to_u64(entity: Entity) -> u64 {
+        let serd: Serdent = entity.into();
+        serd.0
     }
 }
 
@@ -100,7 +106,6 @@ impl LogicController {
     fn register_signals(builder: &init::ClassBuilder<Self>) {
         builder.add_signal(init::Signal {
             name: "map_loaded",
-            // Argument list used by the editor for GUI and generation of GDScript handlers. It can be omitted if the signal is only used from code.
             args: &[
                 init::SignalArgument {
                     name: "tiles",
@@ -118,7 +123,6 @@ impl LogicController {
         });
         builder.add_signal(init::Signal {
             name: "created_entities",
-            // Argument list used by the editor for GUI and generation of GDScript handlers. It can be omitted if the signal is only used from code.
             args: &[
                 init::SignalArgument {
                     name: "entities",
@@ -130,7 +134,6 @@ impl LogicController {
         });
         builder.add_signal(init::Signal {
             name: "deleted_entities",
-            // Argument list used by the editor for GUI and generation of GDScript handlers. It can be omitted if the signal is only used from code.
             args: &[
                 init::SignalArgument {
                     name: "entities",
@@ -140,6 +143,23 @@ impl LogicController {
                 },
             ],
         });
+        builder.add_signal(init::Signal {
+            name: "trade_event",
+            args: &[
+                init::SignalArgument {
+                    name: "trade",
+                    default: Variant::default(),
+                    export_info: init::ExportInfo::new(VariantType::Dictionary),
+                    usage: init::PropertyUsage::DEFAULT,
+                },
+            ],
+        });
+        builder.add_signal(init::Signal {
+            name: "trade_request",
+            args: &[
+
+            ]
+        })
     }
 
     unsafe fn emit_map(&self, mut _owner: Node) {
@@ -172,8 +192,28 @@ impl LogicController {
         }
     }
 
+    fn process_messages(&mut self, messages: Vec<Message>) {
+        for message in messages {
+            match message {
+                Message::TradeEvent(trade) => {
+                    let mut dictionary: Dictionary = Dictionary::new();
+                    /*
+                    dictionary.set(&Variant::from_str("target"), &Variant::from_u64(entity_to_u64(trade.target)));
+                    dictionary.set(&Variant::from_str("buyer"), &Variant::from_u64(entity_to_u64(trade.buyer)));
+                    dictionary.set(&Variant::from_str("seller"), &Variant::from_u64(entity_to_u64(trade.seller)));
+                    dictionary.set(&Variant::from_str("trade_id"), &Variant::from_u64(entity_to_u64(trade.last_response)));
+                    dictionary.set(&Variant::from_str("last_responder"), &Variant::from_u64(entity_to_u64(trade.)));
+
+                     */
+
+                },
+            }
+        }
+    }
+
     #[export]
     unsafe fn _physics_process(&mut self, _owner: Node, delta: f64) {
+
         self.server.tick();
     }
 
@@ -271,6 +311,18 @@ impl LogicController {
     }
 
     #[export]
+    unsafe fn is_display_case(&self, _owner: Node, variant: Variant) -> Variant {
+        let world = &self.server.world;
+        let res: bool = match Self::get_entity(variant) {
+            Some(entity) => {
+                world.get_tag::<DisplayCabinet>(entity).map_or(false, |_| { true })
+            },
+            None => false
+        };
+        res.to_variant()
+    }
+
+    #[export]
     unsafe fn try_move(&mut self, _owner: Node, variant: Variant) {
         match variant.get_type() {
             VariantType::Vector2 => {
@@ -279,6 +331,31 @@ impl LogicController {
             }
             _ => ()
         }
+    }
+
+    #[export]
+    unsafe fn try_take(&mut self, _owner: Node, variant: Variant) {
+        match Self::get_entity(variant) {
+            Some(entity) => {
+                self.server.try_player_take(entity);
+            },
+            None => ()
+        };
+    }
+
+    #[export]
+    unsafe fn try_put(&mut self, _owner: Node, target: Variant, item: Variant) {
+        if let Some(target) = Self::get_entity(target) {
+            if let Some(item) = Self::get_entity(item) {
+                self.server.try_player_put(target, item);
+            }
+        }
+    }
+
+    #[export]
+    unsafe fn get_player(&mut self, _owner: Node) -> Variant {
+        let ser: Serdent = self.server.get_player().into();
+        ser.0.to_variant()
     }
 }
 

@@ -1,0 +1,87 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://GiveTakePanel.gd" type="Script" id=1]
+[ext_resource path="res://Player.gd" type="Script" id=2]
+[ext_resource path="res://Other.gd" type="Script" id=3]
+
+[node name="GiveTakePanel" type="Panel"]
+anchor_left = 0.000336692
+anchor_top = 0.00148778
+anchor_right = 0.000336707
+anchor_bottom = 0.00148778
+margin_top = 0.452106
+margin_right = 401.0
+margin_bottom = 235.452
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Player" type="Node2D" parent="."]
+script = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="Player"]
+margin_left = 12.4118
+margin_top = 7.58499
+margin_right = 84.4118
+margin_bottom = 38.585
+text = "Player
+"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ItemList" type="ItemList" parent="Player"]
+margin_left = 8.0
+margin_top = 23.0
+margin_right = 159.0
+margin_bottom = 197.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="Player"]
+margin_left = 21.8954
+margin_top = 204.276
+margin_right = 143.895
+margin_bottom = 224.276
+text = "Give"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Other" type="Node2D" parent="."]
+script = ExtResource( 3 )
+
+[node name="Label2" type="Label" parent="Other"]
+margin_left = 234.518
+margin_top = 7.75818
+margin_right = 309.518
+margin_bottom = 29.7582
+text = "Placeholder"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ItemList" type="ItemList" parent="Other"]
+margin_left = 235.31
+margin_top = 23.6552
+margin_right = 387.31
+margin_bottom = 196.655
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="Other"]
+margin_left = 253.618
+margin_top = 204.0
+margin_right = 364.618
+margin_bottom = 224.0
+text = "Take"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="on_give" from="Player" to="." method="_on_Player_on_give" flags=3]
+[connection signal="pressed" from="Player/Button" to="Player" method="_on_Button_pressed" flags=3]
+[connection signal="on_take" from="Other" to="." method="_on_Other_on_take" flags=3]
+[connection signal="pressed" from="Other/Button" to="Other" method="_on_Button_pressed" flags=3]

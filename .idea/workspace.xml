@@ -13,14 +13,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5775344c-3b4c-42ac-8432-83647dd77adc" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/resources/action_queue.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/resources/message_queue.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/resources/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/resources/trade_handler.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/systems/trade_system.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Camera2D.gd" beforeDir="false" afterPath="$PROJECT_DIR$/Camera2D.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EntityController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/EntityController.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainScene.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/MainScene.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MapController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/MapController.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UIController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/UIController.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/entities.json" beforeDir="false" afterPath="$PROJECT_DIR$/entities.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entity.gd" beforeDir="false" afterPath="$PROJECT_DIR$/entity.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entity.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/entity.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/component.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/component.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/message.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/message.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/serializers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/serializers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/server.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/server.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/systems/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/systems/mod.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +48,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Python Script" />
         <option value="Rust File" />
       </list>
     </option>
@@ -49,22 +65,39 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/server/systems" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
     <property name="settings.editor.selected.configurable" value="language.rust" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/server/systems" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/server" />
     </key>
   </component>
-  <component name="RunManager" selected="Cargo Command.build">
+  <component name="RunManager" selected="Cargo Command.Test">
     <configuration name="Build" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="build --release" />
+      <option name="allFeatures" value="false" />
+      <option name="nocapture" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="test" />
       <option name="allFeatures" value="false" />
       <option name="nocapture" value="false" />
       <option name="emulateTerminal" value="false" />
@@ -90,6 +123,7 @@
     </configuration>
     <list>
       <item itemvalue="Cargo Command.Build" />
+      <item itemvalue="Cargo Command.Test" />
       <item itemvalue="Cargo Command.build" />
     </list>
     <recent_temporary>
@@ -119,7 +153,9 @@
       <workItem from="1590253983829" duration="27238000" />
       <workItem from="1590335599406" duration="24720000" />
       <workItem from="1590386019101" duration="1619000" />
-      <workItem from="1590444597521" duration="7123000" />
+      <workItem from="1590444597521" duration="10013000" />
+      <workItem from="1590544032861" duration="4755000" />
+      <workItem from="1590633816884" duration="9298000" />
     </task>
     <servers />
   </component>
@@ -139,10 +175,10 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590339947233">
+    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590640060093">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1106@0.23.1920.1106" timestamp="1590339947233" />
+    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1106@0.23.1920.1106" timestamp="1590640060093" />
     <state x="440" y="330" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1590206945581">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
@@ -151,22 +187,38 @@
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
     <state x="981" y="346" width="430" height="423" key="ExperimentsDialog/0.23.1920.1106@0.23.1920.1106" timestamp="1590386103196" />
-    <state width="1025" height="255" key="GridCell.Tab.0.bottom" timestamp="1590461566456">
+    <state width="1769" height="377" key="GridCell.Tab.0.bottom" timestamp="1590643138239">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1025" height="255" key="GridCell.Tab.0.bottom/0.23.1920.1106@0.23.1920.1106" timestamp="1590461566456" />
-    <state width="1025" height="255" key="GridCell.Tab.0.center" timestamp="1590461566456">
+    <state width="1769" height="377" key="GridCell.Tab.0.bottom/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138239" />
+    <state width="1769" height="377" key="GridCell.Tab.0.center" timestamp="1590643138238">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1025" height="255" key="GridCell.Tab.0.center/0.23.1920.1106@0.23.1920.1106" timestamp="1590461566456" />
-    <state width="1025" height="255" key="GridCell.Tab.0.left" timestamp="1590461566455">
+    <state width="1769" height="377" key="GridCell.Tab.0.center/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138238" />
+    <state width="1769" height="377" key="GridCell.Tab.0.left" timestamp="1590643138238">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1025" height="255" key="GridCell.Tab.0.left/0.23.1920.1106@0.23.1920.1106" timestamp="1590461566455" />
-    <state width="1025" height="255" key="GridCell.Tab.0.right" timestamp="1590461566456">
+    <state width="1769" height="377" key="GridCell.Tab.0.left/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138238" />
+    <state width="1769" height="377" key="GridCell.Tab.0.right" timestamp="1590643138238">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1025" height="255" key="GridCell.Tab.0.right/0.23.1920.1106@0.23.1920.1106" timestamp="1590461566456" />
+    <state width="1769" height="377" key="GridCell.Tab.0.right/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138238" />
+    <state width="1769" height="377" key="GridCell.Tab.1.bottom" timestamp="1590643138239">
+      <screen x="0" y="23" width="1920" height="1106" />
+    </state>
+    <state width="1769" height="377" key="GridCell.Tab.1.bottom/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138239" />
+    <state width="1769" height="377" key="GridCell.Tab.1.center" timestamp="1590643138239">
+      <screen x="0" y="23" width="1920" height="1106" />
+    </state>
+    <state width="1769" height="377" key="GridCell.Tab.1.center/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138239" />
+    <state width="1769" height="377" key="GridCell.Tab.1.left" timestamp="1590643138239">
+      <screen x="0" y="23" width="1920" height="1106" />
+    </state>
+    <state width="1769" height="377" key="GridCell.Tab.1.left/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138239" />
+    <state width="1769" height="377" key="GridCell.Tab.1.right" timestamp="1590643138239">
+      <screen x="0" y="23" width="1920" height="1106" />
+    </state>
+    <state width="1769" height="377" key="GridCell.Tab.1.right/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138239" />
     <state x="859" y="215" key="SettingsEditor" timestamp="1590199774998">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
@@ -184,9 +236,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$USER_HOME$/.cargo/git/checkouts/legion-6fbc02e8da0bdce7/55ba3ae/legion_core/src/entity.rs</url>
-          <line>26</line>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/src/server/resources/trade_handler.rs</url>
+          <line>90</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/server/resources/trade_handler.rs</url>
+          <line>82</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

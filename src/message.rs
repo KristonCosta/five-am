@@ -1,24 +1,14 @@
 use crate::color::Color;
 use crate::geom::Point;
 use legion::prelude::Entity;
+use crate::server::resources::trade_handler::{Trade, TradeMessage};
 
+#[derive(Copy, Clone)]
 pub enum Message {
-    GameEvent(String, Option<Color>, Option<Color>),
+    TradeEvent(Trade)
 }
 
+#[derive(Copy, Clone)]
 pub enum Action {
-    Give {
-        source: Entity,
-        destination: Entity,
-        item: Entity,
-    },
-    Take {
-        source: Entity,
-        destination: Entity,
-        item: Entity,
-    },
-    Move {
-        entity: Entity,
-        delta: Point,
-    },
+    TradeUpdate(TradeMessage)
 }

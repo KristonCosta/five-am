@@ -1,10 +1,11 @@
 use crate::component;
-use crate::component::TurnState;
+use crate::component::{TurnState, Tradeable, DisplayCabinet};
 use crate::message::{Action, Message};
 
 use crate::map::Map;
 use crate::server::gamestate::RunState;
 use crate::server::map_builders::BuiltMap;
+use crate::server::systems::trade_system::trade_system;
 use crate::server::systems::index_system::index_system;
 use crate::server::systems::turn_system::{turn_system, PendingMoves};
 
@@ -13,6 +14,9 @@ use crate::server::map_builders::factories::{drunk_builder, random_builder};
 use instant::Instant;
 use legion::prelude::*;
 use std::cmp::{max, min};
+use crate::server::resources::trade_handler::TradeHandler;
+use crate::server::resources::message_queue::MessageQueue;
+use crate::server::resources::action_queue::ActionQueue;
 
 pub struct Server {
     pub(crate) world: World,
@@ -29,16 +33,6 @@ pub struct MapState {
     mapgen_timer: Instant,
 }
 
-pub struct MessageQueue {
-    messages: Vec<Message>,
-}
-
-impl MessageQueue {
-    pub fn push(&mut self, message: Message) {
-        self.messages.push(message);
-    }
-}
-
 impl Server {
     fn setup_ecs() -> (Universe, World, Resources) {
         let universe = Universe::new();
@@ -46,18 +40,21 @@ impl Server {
 
         let mut resources = Resources::default();
         let turn = PendingMoves::new();
-
-        let message_queue = MessageQueue { messages: vec![] };
+        let message_queue = MessageQueue::new();
+        let action_queue = ActionQueue::new();
+        let trade_handler = TradeHandler::new();
         resources.insert(turn);
-
         resources.insert(message_queue);
+        resources.insert(action_queue);
+        resources.insert(trade_handler);
+
         (universe, world, resources)
     }
 
     pub fn new() -> Self {
         let (universe, world, mut resources) = Self::setup_ecs();
         let mut rng = rand::thread_rng();
-        let built_map = drunk_builder((40, 40).into(), 0,&mut rng);
+        let built_map = shop_builder((20, 20).into() ,&mut rng);
         let BuiltMap {
             spawn_list: _,
             map,
@@ -76,6 +73,7 @@ impl Server {
         let schedule = Schedule::builder()
             .add_system(index_system())
             .add_system(turn_system())
+            .add_system(trade_system())
             .build();
 
         Server {
@@ -129,16 +127,7 @@ impl Server {
             .push(love);
     }
 
-    pub fn messages(&mut self) -> Vec<Message> {
-        let queue = self.resources.get_mut::<MessageQueue>();
-        queue
-            .expect("failed to get resource")
-            .messages
-            .drain(..)
-            .collect()
-    }
-
-    pub fn tick(&mut self) {
+    pub fn tick(&mut self) -> Vec<Message> {
         match self.run_state {
             RunState::Running => {
                 let world = &mut self.world;
@@ -155,11 +144,20 @@ impl Server {
                 self.run_state = RunState::Running;
             }
             _ => panic!("Unhandled runstate!"),
-        }
+        };
+        let mut message_queue = self.resources.get_mut::<MessageQueue>().unwrap();
+        let messages = message_queue.get_messages();
+        message_queue.clear();
+        messages
     }
 
     pub fn get_player(&self) -> Entity {
         let query = <(Read<component::Position>)>::query().filter(tag::<component::Player>());
+        query.iter_entities(&self.world).next().unwrap().0
+    }
+
+    pub fn get_tradeable(&self) -> Entity {
+        let query = <(Read<component::Tradeable>)>::query().filter(tag::<component::DisplayCabinet>());
         query.iter_entities(&self.world).next().unwrap().0
     }
 
@@ -213,12 +211,6 @@ impl Server {
             let name = world
                 .get_component_mut::<component::Name>(contents)
                 .unwrap();
-            let mut message_queue = resources.get_mut::<MessageQueue>().unwrap();
-            message_queue.push(Message::GameEvent(
-                format!("You took {:?}", name.name),
-                None,
-                None,
-            ));
             true
         } else {
             false
@@ -231,7 +223,6 @@ impl Server {
         }
         let world = &mut self.world;
         let resources = &mut self.resources;
-        let mut message_queue = resources.get_mut::<MessageQueue>().unwrap();
         let map = resources.get_mut::<Map>().unwrap();
         let query = <(Write<component::Position>, Write<component::ActiveTurn>)>::query()
             .filter(tag::<component::Player>());
@@ -244,13 +235,7 @@ impl Server {
             let desired_y = min(map.size.y, max(0, pos.y + delta_y));
 
             let coord = map.coord_to_index(desired_x, desired_y);
-            if map.blocked[coord] {
-                message_queue.push(Message::GameEvent(
-                    format!("Ouch, you hit a wall!"),
-                    None,
-                    None,
-                ));
-            } else if let Some(other) = map.tile_content[coord] {
+            if let Some(other) = map.tile_content[coord] {
                 if entity != other {}
             } else {
                 pos.x = desired_x;
@@ -262,5 +247,83 @@ impl Server {
 
         command_buffer.write(world);
         moved
+    }
+
+    pub fn try_start_trade(&mut self) {
+        let buyer = self.get_tradeable();
+        let seller = self.get_player();
+        let target = self.get_player_inventory()[0];
+        let mut trade_handler = self.resources.get_mut::<TradeHandler>().unwrap();
+        let mut message_queue= self.resources.get_mut::<MessageQueue>().unwrap();
+        let trade_request = trade_handler.start(
+            target,
+            buyer,
+            seller,
+            buyer
+        );
+        self.world.get_component_mut::<Tradeable>(buyer).map(|mut tradeable| tradeable.request = Some(trade_request));
+        self.world.get_component_mut::<Tradeable>(seller).map(|mut tradeable| tradeable.request = Some(trade_request));
+        trade_handler.get_trade(trade_request).map(|trade| message_queue.push(Message::TradeEvent(trade)));
+    }
+
+    pub fn add_action(&mut self, action: Action) {
+        let mut action_queue= self.resources.get_mut::<ActionQueue>().unwrap();
+        action_queue.push(action)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::server::resources::trade_handler::{TradeMessage, TradeState};
+
+    #[test]
+    fn test_all() {
+        let mut server = Server::new();
+        for _ in 0..10 {
+            server.tick();
+        }
+        server.try_start_trade();
+        let messages = server.tick();
+        let request = match messages.get(0).unwrap() {
+            Message::TradeEvent(request) => {request.request},
+        };
+        server.add_action(Action::TradeUpdate(TradeMessage{
+            origin: server.get_player(),
+            request,
+            state_change: TradeState::Start
+        }));
+        let messages = server.tick();
+        let trade = match messages.get(0).unwrap() {
+            Message::TradeEvent(request) => request
+        };
+        assert_eq!(trade.trade_state, TradeState::Start);
+        server.add_action(Action::TradeUpdate(TradeMessage{
+            origin: server.get_tradeable(),
+            request,
+            state_change: TradeState::Accepted
+        }));
+        let messages = server.tick();
+        assert!(messages.is_empty());
+        server.add_action(Action::TradeUpdate(TradeMessage{
+            origin: server.get_tradeable(),
+            request,
+            state_change: TradeState::Offer(30)
+        }));
+        let messages = server.tick();
+        let trade = match messages.get(0).unwrap() {
+            Message::TradeEvent(request) => request
+        };
+        assert_eq!(trade.trade_state, TradeState::Offer(30));
+        server.add_action(Action::TradeUpdate(TradeMessage{
+            origin: server.get_player(),
+            request,
+            state_change: TradeState::Accepted
+        }));
+        let messages = server.tick();
+        let trade = match messages.get(0).unwrap() {
+            Message::TradeEvent(request) => request
+        };
+        assert_eq!(trade.trade_state, TradeState::Final(30));
     }
 }

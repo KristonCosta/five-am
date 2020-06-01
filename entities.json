@@ -10,6 +10,7 @@
           "render_order": 3
         }
       },
+      "tradeable": true,
       "priority": {
         "value": 1
       },
@@ -20,10 +21,10 @@
     },
     {
       "id": "love",
-      "name": "Heart",
+      "name": "Cherries",
       "renderable": {
         "glyph": {
-          "ch": "♥",
+          "ch": "1",
           "foreground": "#00dccb",
           "render_order": 3
         }
@@ -31,10 +32,10 @@
     },
     {
       "id": "club",
-      "name": "Club",
+      "name": "Cabbage",
       "renderable": {
         "glyph": {
-          "ch": "♣",
+          "ch": "2",
           "foreground": "#9757ff",
           "render_order": 3
         }
@@ -42,10 +43,10 @@
     },
     {
       "id": "star",
-      "name": "Star",
+      "name": "Orange",
       "renderable": {
         "glyph": {
-          "ch": "*",
+          "ch": "3",
           "foreground": "#0053ff",
           "render_order": 3
         }
@@ -53,10 +54,10 @@
     },
     {
       "id": "diamond",
-      "name": "Diamond",
+      "name": "Cabbage",
       "renderable": {
         "glyph": {
-          "ch": "♦",
+          "ch": "4",
           "foreground": "#6fa501",
           "render_order": 3
         }
@@ -72,7 +73,8 @@
           "render_order": 3
         }
       },
-      "display_cabinet": true
+      "display_cabinet": true,
+      "tradeable": true
     }
   ]
 }

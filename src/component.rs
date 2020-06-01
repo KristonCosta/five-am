@@ -1,6 +1,7 @@
 use crate::geom::Point;
 use crate::glyph::Glyph;
 use legion::prelude::Entity;
+use crate::server::resources::trade_handler::TradeRequest;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Position {
@@ -32,6 +33,12 @@ pub enum TurnState {
     PENDING,
     ACTIVE,
     DONE,
+}
+
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Tradeable {
+    pub request: Option<TradeRequest>
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

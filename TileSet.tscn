@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://textures/cherries.png" type="Texture" id=1]
+[ext_resource path="res://textures/cabbage.png" type="Texture" id=2]
+[ext_resource path="res://textures/orange.png" type="Texture" id=3]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="cabbage" type="Sprite" parent="."]
+position = Vector2( 32, 32 )
+texture = ExtResource( 2 )
+
+[node name="orange" type="Sprite" parent="."]
+position = Vector2( 96, 32 )
+texture = ExtResource( 3 )
+
+[node name="cherries" type="Sprite" parent="."]
+position = Vector2( 64, 32 )
+texture = ExtResource( 1 )
