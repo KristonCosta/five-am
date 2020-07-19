@@ -8,7 +8,9 @@ extends Node2D
 var _db = null
 
 onready var givetake_scene = preload("res://GiveTakePanel.tscn")
-var givetake = null 
+onready var trade_scene = preload("res://TradePanel.tscn")
+onready var texture_loader = get_node("TextureLoader")
+var active_panel = null 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -19,28 +21,33 @@ func _process(delta):
 	pass
 	
 func _on_LogicController_map_loaded(tiles, width):
+	print("Handling")
 	var map_controller = get_node("MapController")
 	map_controller.load_map(tiles, width)
 
-
-func _on_LogicController_sync_entities(entities):
-	pass # Replace with function body.
-
-
 func close_panel(scene):
 	get_node("HUD").remove_child(scene)
-	givetake = null
+	active_panel = null
 
 func _on_EntityController_on_entity_click(entity):
 	if _db.is_display_case(entity): 
 		var scene = givetake_scene.instance()
 		var player = _db.get_player()
 		scene.setup(_db, player, entity)
-		if givetake != null: 
-			close_panel(givetake)
-		givetake = scene
+		if active_panel != null: 
+			close_panel(active_panel)
+		active_panel = scene
 		get_node("HUD").add_child(scene)
-		scene.connect("done", self, "close_panel", [givetake])
+		scene.connect("done", self, "close_panel", [active_panel])
 		
-	var label = get_node("HUD/Panel/Label")
-	label.text = _db.get_name(entity)
+
+
+func _on_LogicController_trade_event(trade):
+	var scene = trade_scene.instance()
+	scene.setup(_db, texture_loader)
+	if active_panel != null: 
+		close_panel(active_panel)
+	scene.bind(trade)
+	active_panel = scene
+	get_node("HUD").add_child(scene)
+	

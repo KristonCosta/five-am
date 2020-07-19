@@ -1,0 +1,244 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://TradePanel.gd" type="Script" id=1]
+[ext_resource path="res://entity.tscn" type="PackedScene" id=2]
+[ext_resource path="res://PopupPanel.gd" type="Script" id=3]
+[ext_resource path="res://ActiveTrade.gd" type="Script" id=4]
+[ext_resource path="res://AcceptedTrade.gd" type="Script" id=5]
+[ext_resource path="res://RejectedTrade.gd" type="Script" id=6]
+
+[node name="TradeController" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="PendingTrade" type="PopupPanel" parent="."]
+visible = true
+margin_right = 400.0
+margin_bottom = 120.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="PendingTrade"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 396.0
+margin_bottom = 116.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Reject" type="Button" parent="PendingTrade/Panel"]
+margin_left = 235.055
+margin_top = 87.3252
+margin_right = 332.055
+margin_bottom = 107.325
+text = "Reject"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Accept" type="Button" parent="PendingTrade/Panel"]
+margin_left = 48.3106
+margin_top = 86.2006
+margin_right = 137.311
+margin_bottom = 106.201
+text = "Accept"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Request" type="Label" parent="PendingTrade/Panel"]
+margin_left = 49.961
+margin_top = 49.5111
+margin_right = 298.961
+margin_bottom = 63.5111
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TopLabel" type="Label" parent="PendingTrade/Panel"]
+margin_left = 143.98
+margin_top = 10.8238
+margin_right = 233.98
+margin_bottom = 24.8238
+text = "Pending Trade"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AcceptedTrade" type="PopupPanel" parent="."]
+visible = true
+margin_right = 400.0
+margin_bottom = 120.0
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="AcceptedTrade"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 396.0
+margin_bottom = 116.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Ok" type="Button" parent="AcceptedTrade/Panel"]
+margin_left = 135.357
+margin_top = 79.4528
+margin_right = 224.357
+margin_bottom = 99.4528
+text = "Wooo"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Request" type="Label" parent="AcceptedTrade/Panel"]
+margin_left = 49.961
+margin_top = 49.5111
+margin_right = 298.961
+margin_bottom = 63.5111
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TopLabel" type="Label" parent="AcceptedTrade/Panel"]
+margin_left = 119.238
+margin_top = 27.2434
+margin_right = 254.238
+margin_bottom = 41.2434
+text = "Trade was Accepted!!"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RejectedTrade" type="PopupPanel" parent="."]
+margin_right = 400.0
+margin_bottom = 120.0
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="RejectedTrade"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 396.0
+margin_bottom = 116.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Ok" type="Button" parent="RejectedTrade/Panel"]
+margin_left = 135.357
+margin_top = 79.4528
+margin_right = 224.357
+margin_bottom = 99.4528
+text = "Aww"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Request" type="Label" parent="RejectedTrade/Panel"]
+margin_left = 49.961
+margin_top = 49.5111
+margin_right = 298.961
+margin_bottom = 63.5111
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TopLabel" type="Label" parent="RejectedTrade/Panel"]
+margin_left = 119.238
+margin_top = 27.2434
+margin_right = 254.238
+margin_bottom = 41.2434
+text = "Trade was Rejected!!"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActiveTrade" type="PopupPanel" parent="."]
+margin_right = 360.0
+margin_bottom = 200.0
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="ActiveTrade"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 356.0
+margin_bottom = 196.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Buyer" parent="ActiveTrade/Panel" instance=ExtResource( 2 )]
+position = Vector2( 74.7611, 63.5599 )
+scale = Vector2( 2, 2 )
+
+[node name="Seller" parent="ActiveTrade/Panel" instance=ExtResource( 2 )]
+position = Vector2( 259.117, 63.9083 )
+scale = Vector2( 2, 2 )
+
+[node name="Target" parent="ActiveTrade/Panel" instance=ExtResource( 2 )]
+position = Vector2( 164.678, 62.9542 )
+scale = Vector2( 2, 2 )
+
+[node name="Label" type="Label" parent="ActiveTrade/Panel"]
+margin_left = 84.4284
+margin_top = 114.0
+margin_right = 175.428
+margin_bottom = 128.0
+text = "Current Offer: "
+
+[node name="CurrentOffer" type="Label" parent="ActiveTrade/Panel"]
+margin_left = 189.368
+margin_top = 114.027
+margin_right = 229.368
+margin_bottom = 128.027
+text = "0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpinBox" type="SpinBox" parent="ActiveTrade/Panel"]
+margin_left = 51.6261
+margin_top = 141.106
+margin_right = 125.626
+margin_bottom = 165.106
+
+[node name="ActiveOffer" type="Button" parent="ActiveTrade/Panel"]
+margin_left = 47.0
+margin_top = 171.0
+margin_right = 120.0
+margin_bottom = 191.0
+text = "Offer"
+
+[node name="ActiveReject" type="Button" parent="ActiveTrade/Panel"]
+margin_left = 210.756
+margin_top = 170.969
+margin_right = 277.756
+margin_bottom = 190.969
+text = "Reject"
+
+[node name="ActiveAccept" type="Button" parent="ActiveTrade/Panel"]
+margin_left = 132.257
+margin_top = 170.844
+margin_right = 197.257
+margin_bottom = 190.844
+text = "Accept"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="PendingTrade/Panel/Reject" to="PendingTrade" method="_on_Reject_pressed" flags=3]
+[connection signal="pressed" from="PendingTrade/Panel/Accept" to="PendingTrade" method="_on_Accept_pressed" flags=3]
+[connection signal="pressed" from="AcceptedTrade/Panel/Ok" to="AcceptedTrade" method="_on_Ok_pressed"]
+[connection signal="pressed" from="RejectedTrade/Panel/Ok" to="RejectedTrade" method="_on_Accept_pressed" flags=3]
+[connection signal="pressed" from="ActiveTrade/Panel/ActiveOffer" to="ActiveTrade" method="_on_ActiveOffer_pressed" flags=3]
+[connection signal="pressed" from="ActiveTrade/Panel/ActiveReject" to="ActiveTrade" method="_on_ActiveReject_pressed" flags=3]
+[connection signal="pressed" from="ActiveTrade/Panel/ActiveAccept" to="ActiveTrade" method="_on_ActiveAccept_pressed" flags=3]

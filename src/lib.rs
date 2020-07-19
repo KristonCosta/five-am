@@ -14,7 +14,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use crate::component::{Name, Inventory, Position, Renderable, DisplayCabinet};
 use crate::client::{Serdent, entity_to_u64};
-use crate::message::Message;
+use crate::message::{Message, Action};
+use crate::server::resources::trade_handler::{Trade, TradeState, TradeMessage, TradeRequest};
 
 pub mod color;
 pub mod component;
@@ -28,7 +29,7 @@ pub mod client {
     use legion::entity::Entity;
     use serde::{Deserialize, Serialize};
     use std::convert::{From, Into};
-
+    use gdnative::*;
     type EType = u64;
 
     #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -36,8 +37,21 @@ pub mod client {
 
     impl From<Entity> for Serdent {
         fn from(entity: Entity) -> Self {
+            
             let etype: EType = unsafe { std::mem::transmute(entity) };
             Serdent(etype)
+        }
+    }
+
+    impl ToVariant for Serdent {
+        fn to_variant(&self) -> Variant {
+            Variant::from_u64(self.0)
+        }
+    }
+
+    impl FromVariant for Serdent {
+        fn from_variant(variant: &Variant) -> Result<Self, FromVariantError> {
+            Ok(Serdent(variant.to_u64()))
         }
     }
 
@@ -50,6 +64,75 @@ pub mod client {
     pub fn entity_to_u64(entity: Entity) -> u64 {
         let serd: Serdent = entity.into();
         serd.0
+    }
+}
+
+#[derive(ToVariant, FromVariant)]
+enum TradeStateDTO {
+    Pending,
+    Start,
+    Offer(u32),
+    CounterOffer(u32),
+    Rejected,
+    Accepted,
+    Final(u32),
+}
+
+#[derive(ToVariant)]
+struct TradeDTO {
+    pub request: u64,
+    pub target: Serdent,
+    pub buyer: Serdent,
+    pub seller: Serdent,
+    pub last_response: Serdent,
+    pub trade_state: TradeStateDTO
+}
+
+impl Into<TradeDTO> for Trade {
+    fn into(self) -> TradeDTO {
+        TradeDTO {
+            request: self.request.id,
+            target: self.target.into(),
+            buyer: self.buyer.into(),
+            seller: self.seller.into(),
+            last_response: self.last_response.into(),
+            trade_state: match self.trade_state {
+                TradeState::Pending => TradeStateDTO::Pending,
+                TradeState::Start => TradeStateDTO::Start,
+                TradeState::Offer(val) => TradeStateDTO::Offer(val),
+                TradeState::CounterOffer(val) => TradeStateDTO::CounterOffer(val),
+                TradeState::Rejected => TradeStateDTO::Rejected,
+                TradeState::Accepted => TradeStateDTO::Accepted,
+                TradeState::Final(val) => TradeStateDTO::Final(val),
+            }
+        }
+    }
+}
+
+#[derive(FromVariant)]
+struct TradeMessageDTO {
+    pub origin: Serdent,
+    pub request: u64,
+    pub state_change: TradeStateDTO
+}
+
+impl Into<TradeMessage> for TradeMessageDTO {
+    fn into(self) -> TradeMessage {
+        TradeMessage {
+            origin: self.origin.into(),
+            request: TradeRequest {
+                id: self.request
+            },
+            state_change: match self.state_change {
+                TradeStateDTO::Pending => TradeState::Pending,
+                TradeStateDTO::Start => TradeState::Start,
+                TradeStateDTO::Offer(val) => TradeState::Offer(val),
+                TradeStateDTO::CounterOffer(val) => TradeState::CounterOffer(val),
+                TradeStateDTO::Rejected => TradeState::Rejected,
+                TradeStateDTO::Accepted => TradeState::Accepted,
+                TradeStateDTO::Final(val) => TradeState::Final(val),
+            }
+        }
     }
 }
 
@@ -95,6 +178,7 @@ impl LogicController {
     fn _init(mut _owner: Node) -> Self {
         let server = Server::new();
         let query = <(Read<component::Position>)>::query();
+        godot_print!("Connected to server.");
         LogicController {
             server,
             tracker: EntityTracker {
@@ -171,11 +255,12 @@ impl LogicController {
                 TileType::Digging => ">".to_string(),
             }
         ).collect();
-
+        godot_print!("Emitting map");
         _owner.emit_signal(
             GodotString::from_str("map_loaded"),
             &[variant.to_variant(), Variant::from_u64(map.size.x as u64)]
         );
+        godot_print!("Emitted map");
     }
 
     unsafe fn emit_entities(&self, mut _owner: Node, signal: &str, entities: Vec<u64>) {
@@ -187,34 +272,35 @@ impl LogicController {
 
     #[export]
     fn _ready(&self, mut _owner: Node) {
+        godot_print!("1: Emitting map");
         unsafe {
             self.emit_map(_owner);
         }
     }
 
-    fn process_messages(&mut self, messages: Vec<Message>) {
+    unsafe fn process_messages(&mut self, mut _owner: Node, messages: Vec<Message>) {
         for message in messages {
             match message {
                 Message::TradeEvent(trade) => {
-                    let mut dictionary: Dictionary = Dictionary::new();
-                    /*
-                    dictionary.set(&Variant::from_str("target"), &Variant::from_u64(entity_to_u64(trade.target)));
-                    dictionary.set(&Variant::from_str("buyer"), &Variant::from_u64(entity_to_u64(trade.buyer)));
-                    dictionary.set(&Variant::from_str("seller"), &Variant::from_u64(entity_to_u64(trade.seller)));
-                    dictionary.set(&Variant::from_str("trade_id"), &Variant::from_u64(entity_to_u64(trade.last_response)));
-                    dictionary.set(&Variant::from_str("last_responder"), &Variant::from_u64(entity_to_u64(trade.)));
-
-                     */
-
+                    godot_print!("Processing trade event");
+                    let trade_dto: TradeDTO = trade.into();
+                    _owner.emit_signal(
+                        GodotString::from_str("trade_event"),
+                        &[trade_dto.to_variant()]
+                    );
+                    godot_print!("Processed");
                 },
+                Message::LogEvent(event) => {
+                    godot_print!("{}", event)
+                }
             }
         }
     }
 
     #[export]
-    unsafe fn _physics_process(&mut self, _owner: Node, delta: f64) {
-
-        self.server.tick();
+    unsafe fn _physics_process(&mut self, mut _owner: Node, delta: f64) {
+        let messages = self.server.tick();
+        self.process_messages(_owner, messages);
     }
 
     #[export]
@@ -344,12 +430,26 @@ impl LogicController {
     }
 
     #[export]
+    unsafe fn try_trade(&mut self, _owner: Node) {
+        self.server.try_start_trade();
+    }
+
+    #[export]
     unsafe fn try_put(&mut self, _owner: Node, target: Variant, item: Variant) {
         if let Some(target) = Self::get_entity(target) {
             if let Some(item) = Self::get_entity(item) {
                 self.server.try_player_put(target, item);
             }
         }
+    }
+
+    #[export]
+    unsafe fn try_trade_handle(&mut self, _owner: Node, request: Variant) {
+        let dto: TradeMessageDTO = TradeMessageDTO::from_variant(&request).unwrap();
+        let message: TradeMessage = dto.into();
+        godot_print!("Handling trade {:?}", message);
+        self.server.add_action(Action::TradeUpdate(message));
+        godot_print!("Trade pushed to queue");
     }
 
     #[export]

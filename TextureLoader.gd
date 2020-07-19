@@ -29,6 +29,7 @@ var ascii_map = {
 	'2': "cabbage",
 	'3': "orange",
 	'4': "cabbage",
+	'◙': "Tableround"
 }
 
 class TextureBundle:

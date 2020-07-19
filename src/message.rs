@@ -3,12 +3,19 @@ use crate::geom::Point;
 use legion::prelude::Entity;
 use crate::server::resources::trade_handler::{Trade, TradeMessage};
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub enum Message {
-    TradeEvent(Trade)
+    TradeEvent(Trade),
+    LogEvent(String)
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub enum Action {
-    TradeUpdate(TradeMessage)
+    TradeUpdate(TradeMessage),
+    Transaction {
+        source: Entity,
+        target: Entity,
+        object: Entity,
+        value: u32
+    }
 }

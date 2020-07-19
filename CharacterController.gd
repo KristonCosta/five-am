@@ -13,4 +13,6 @@ func _input(event: InputEvent):
 				KEY_A:
 					_server.try_move(Vector2(-1, 0))			
 				KEY_D:
-					_server.try_move(Vector2(1, 0))			
+					_server.try_move(Vector2(1, 0))		
+				KEY_T: 
+					_server.try_trade()	

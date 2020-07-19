@@ -31,6 +31,16 @@
       <sourceFolder url="file://$MODULE_DIR$/target/debug/build/byteorder-cbf05fa51dca2d4d/out" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/debug/build/proc-macro2-dfbce438face3c71/out" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/debug/build/syn-29486a01a1758bf2/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/gdnative-core-1efc9d041554ea7b/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/gdnative-sys-76f3c1f4d12a49e4/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/libc-b29ddca3f6666575/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/proc-macro2-f4376d9eee0c0737/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/syn-e83fcea45aec8ff7/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/serde-278d08868acc31b9/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/ryu-3d4b9b78c17b368c/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/gdnative-bindings-8f35a7ef93573686/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/gdnative-core-aa936f7f2dd3b936/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/debug/build/gdnative-sys-31a9c94a126a1c7c/out" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

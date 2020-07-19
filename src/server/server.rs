@@ -14,9 +14,10 @@ use crate::server::map_builders::factories::{drunk_builder, random_builder};
 use instant::Instant;
 use legion::prelude::*;
 use std::cmp::{max, min};
-use crate::server::resources::trade_handler::TradeHandler;
+use crate::server::resources::trade_handler::{TradeHandler, TradeState};
 use crate::server::resources::message_queue::MessageQueue;
 use crate::server::resources::action_queue::ActionQueue;
+use crate::server::systems::transaction_system::transaction_system;
 
 pub struct Server {
     pub(crate) world: World,
@@ -54,7 +55,7 @@ impl Server {
     pub fn new() -> Self {
         let (universe, world, mut resources) = Self::setup_ecs();
         let mut rng = rand::thread_rng();
-        let built_map = shop_builder((20, 20).into() ,&mut rng);
+        let built_map = shop_builder((8, 8).into() ,&mut rng);
         let BuiltMap {
             spawn_list: _,
             map,
@@ -71,6 +72,7 @@ impl Server {
         }
 
         let schedule = Schedule::builder()
+            .add_system(transaction_system())
             .add_system(index_system())
             .add_system(turn_system())
             .add_system(trade_system())
@@ -145,6 +147,8 @@ impl Server {
             }
             _ => panic!("Unhandled runstate!"),
         };
+        let mut action_queue = self.resources.get_mut::<ActionQueue>().unwrap();
+        action_queue.step();
         let mut message_queue = self.resources.get_mut::<MessageQueue>().unwrap();
         let messages = message_queue.get_messages();
         message_queue.clear();
@@ -235,9 +239,7 @@ impl Server {
             let desired_y = min(map.size.y, max(0, pos.y + delta_y));
 
             let coord = map.coord_to_index(desired_x, desired_y);
-            if let Some(other) = map.tile_content[coord] {
-                if entity != other {}
-            } else {
+            if map.tile_content[coord] == None && !map.blocked[coord] {
                 pos.x = desired_x;
                 pos.y = desired_y;
                 moved = true;

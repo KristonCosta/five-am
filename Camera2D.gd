@@ -1,7 +1,7 @@
 extends Camera2D
 
 func _input(event: InputEvent):
-	var map = get_node("../MapController/TileMap")
+	var map = get_node("../MapController/AsciiTileMap")
 	var cell_size = map.cell_size
 	if event.is_action_pressed("zoom_in"):
 		zoom *= 1.1

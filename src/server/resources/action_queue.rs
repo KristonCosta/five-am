@@ -1,13 +1,15 @@
 use crate::message::Action;
 
 pub struct ActionQueue {
-    queue: Vec<Action>
+    queue: Vec<Action>,
+    future: Vec<Action>,
 }
 
 impl ActionQueue {
     pub fn new() -> Self {
         Self {
-            queue: Vec::new()
+            queue: Vec::new(),
+            future: Vec::new()
         }
     }
 
@@ -15,11 +17,18 @@ impl ActionQueue {
         self.queue.clone()
     }
 
-    pub fn clear(&mut self) {
-        self.queue.clear()
+    pub fn step(&mut self) {
+        self.queue.clear();
+        let mut current = Vec::new();
+        std::mem::swap(&mut self.future, &mut current);
+        self.queue = current;
     }
 
     pub fn push(&mut self, action: Action) {
         self.queue.push(action)
+    }
+
+    pub fn push_future(&mut self, action: Action) {
+        self.future.push(action)
     }
 }

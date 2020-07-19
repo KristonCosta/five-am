@@ -14,7 +14,8 @@ func update_entity(entity):
 	var bundle = _texture_loader.get_bundle(letter)
 	_sprite.region_rect = bundle.get_region()
 	_sprite.texture = bundle.get_texture()
-	_sprite.scale = Vector2(20.0 / bundle.get_region().size.x, 20.0 / bundle.get_region().size.y)
+	_sprite.scale = Vector2(20.0 / bundle.get_region().size.x, 15.0 / bundle.get_region().size.y)
+	_sprite.position = Vector2(0.0, -5.0)
 	
 func clear_entity():
 	_sprite.region_rect = Rect2(0.0, 0.0, 0.0, 0.0)

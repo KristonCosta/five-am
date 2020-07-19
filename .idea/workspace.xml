@@ -13,29 +13,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5775344c-3b4c-42ac-8432-83647dd77adc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/resources/action_queue.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/resources/message_queue.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/resources/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/resources/trade_handler.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/systems/trade_system.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/systems/transaction_system.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/god-four-am.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/god-four-am.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Camera2D.gd" beforeDir="false" afterPath="$PROJECT_DIR$/Camera2D.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CharacterController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/CharacterController.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DisplayCase.gd" beforeDir="false" afterPath="$PROJECT_DIR$/DisplayCase.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EntityController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/EntityController.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainScene.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/MainScene.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MapController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/MapController.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TextureLoader.gd" beforeDir="false" afterPath="$PROJECT_DIR$/TextureLoader.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TileSet.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/TileSet.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UIController.gd" beforeDir="false" afterPath="$PROJECT_DIR$/UIController.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entities.json" beforeDir="false" afterPath="$PROJECT_DIR$/entities.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entity.gd" beforeDir="false" afterPath="$PROJECT_DIR$/entity.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/component.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/component.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphic_tileset.tres" beforeDir="false" afterPath="$PROJECT_DIR$/graphic_tileset.tres" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/message.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/message.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/serializers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/serializers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/resources/action_queue.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/resources/action_queue.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/resources/trade_handler.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/resources/trade_handler.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/server.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/server.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/systems/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/systems/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/systems/trade_system.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/systems/trade_system.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,19 +73,18 @@
     <property name="settings.editor.selected.configurable" value="language.rust" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/server/systems" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/server" />
     </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/server/systems" />
+    </key>
   </component>
-  <component name="RunManager" selected="Cargo Command.Test">
+  <component name="RunManager" selected="Cargo Command.build">
     <configuration name="Build" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="build --release" />
       <option name="allFeatures" value="false" />
-      <option name="nocapture" value="false" />
       <option name="emulateTerminal" value="false" />
       <option name="backtrace" value="SHORT" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -99,7 +97,6 @@
       <option name="channel" value="DEFAULT" />
       <option name="command" value="test" />
       <option name="allFeatures" value="false" />
-      <option name="nocapture" value="false" />
       <option name="emulateTerminal" value="false" />
       <option name="backtrace" value="SHORT" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -112,7 +109,6 @@
       <option name="channel" value="DEFAULT" />
       <option name="command" value="build --package god-four-am --lib" />
       <option name="allFeatures" value="false" />
-      <option name="nocapture" value="false" />
       <option name="emulateTerminal" value="false" />
       <option name="backtrace" value="SHORT" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -156,6 +152,11 @@
       <workItem from="1590444597521" duration="10013000" />
       <workItem from="1590544032861" duration="4755000" />
       <workItem from="1590633816884" duration="9298000" />
+      <workItem from="1591052263611" duration="14452000" />
+      <workItem from="1593752676021" duration="840000" />
+      <workItem from="1593802766379" duration="19000" />
+      <workItem from="1593802834813" duration="1586000" />
+      <workItem from="1593824138955" duration="13857000" />
     </task>
     <servers />
   </component>
@@ -175,10 +176,14 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590640060093">
+    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591052613741">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1106@0.23.1920.1106" timestamp="1590640060093" />
+    <state x="849" y="239" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1106@0.23.1920.1106" timestamp="1591052613741" />
+    <state x="777" y="299" key="#com.intellij.ide.util.MemberChooser" timestamp="1591062770310">
+      <screen x="0" y="23" width="1920" height="1106" />
+    </state>
+    <state x="777" y="299" key="#com.intellij.ide.util.MemberChooser/0.23.1920.1106@0.23.1920.1106" timestamp="1591062770310" />
     <state x="440" y="330" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1590206945581">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
@@ -187,22 +192,22 @@
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
     <state x="981" y="346" width="430" height="423" key="ExperimentsDialog/0.23.1920.1106@0.23.1920.1106" timestamp="1590386103196" />
-    <state width="1769" height="377" key="GridCell.Tab.0.bottom" timestamp="1590643138239">
+    <state width="1769" height="255" key="GridCell.Tab.0.bottom" timestamp="1593750750577">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1769" height="377" key="GridCell.Tab.0.bottom/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138239" />
-    <state width="1769" height="377" key="GridCell.Tab.0.center" timestamp="1590643138238">
+    <state width="1769" height="255" key="GridCell.Tab.0.bottom/0.23.1920.1106@0.23.1920.1106" timestamp="1593750750577" />
+    <state width="1769" height="255" key="GridCell.Tab.0.center" timestamp="1593750750577">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1769" height="377" key="GridCell.Tab.0.center/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138238" />
-    <state width="1769" height="377" key="GridCell.Tab.0.left" timestamp="1590643138238">
+    <state width="1769" height="255" key="GridCell.Tab.0.center/0.23.1920.1106@0.23.1920.1106" timestamp="1593750750577" />
+    <state width="1769" height="255" key="GridCell.Tab.0.left" timestamp="1593750750577">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1769" height="377" key="GridCell.Tab.0.left/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138238" />
-    <state width="1769" height="377" key="GridCell.Tab.0.right" timestamp="1590643138238">
+    <state width="1769" height="255" key="GridCell.Tab.0.left/0.23.1920.1106@0.23.1920.1106" timestamp="1593750750577" />
+    <state width="1769" height="255" key="GridCell.Tab.0.right" timestamp="1593750750577">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
-    <state width="1769" height="377" key="GridCell.Tab.0.right/0.23.1920.1106@0.23.1920.1106" timestamp="1590643138238" />
+    <state width="1769" height="255" key="GridCell.Tab.0.right/0.23.1920.1106@0.23.1920.1106" timestamp="1593750750577" />
     <state width="1769" height="377" key="GridCell.Tab.1.bottom" timestamp="1590643138239">
       <screen x="0" y="23" width="1920" height="1106" />
     </state>
@@ -244,6 +249,11 @@
           <url>file://$PROJECT_DIR$/src/server/resources/trade_handler.rs</url>
           <line>82</line>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/lib.rs</url>
+          <line>27</line>
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

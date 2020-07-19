@@ -11,7 +11,7 @@ pub struct TradeMessage {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct TradeRequest {
-    id: u64
+    pub(crate) id: u64
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -103,6 +103,7 @@ impl TradeHandler {
                     if TradeState::Start == trade.trade_state
                         || (std::mem::discriminant(&TradeState::CounterOffer(1)) == std::mem::discriminant(&trade.trade_state)) {
                         trade.trade_state = TradeState::Offer(value);
+                        trade.last_response = message.origin;
                         return Some(trade.clone())
                     }
                 }
@@ -113,6 +114,7 @@ impl TradeHandler {
                     if TradeState::Start == trade.trade_state
                         || (std::mem::discriminant(&TradeState::Offer(1)) == std::mem::discriminant(&trade.trade_state)) {
                         trade.trade_state = TradeState::CounterOffer(value);
+                        trade.last_response = message.origin;
                         return Some(trade.clone())
                     }
                 }
@@ -127,10 +129,12 @@ impl TradeHandler {
                     match trade.trade_state {
                         TradeState::Offer(val) => {
                             trade.trade_state = Final(val);
+                            trade.last_response = message.origin;
                             true
                         },
                         TradeState::CounterOffer(val) => {
                             trade.trade_state = Final(val);
+                            trade.last_response = message.origin;
                             true
                         },
                         _ => false

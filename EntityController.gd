@@ -3,7 +3,7 @@ extends Node2D
 signal on_entity_click(entity)
 
 
-onready var entity_scene = preload("res://entity.tscn")
+onready var entity_scene = preload("res://SyncedEntity.tscn")
 onready var texture_loader = get_node("../TextureLoader")
 
 var _registered_entities = {}
